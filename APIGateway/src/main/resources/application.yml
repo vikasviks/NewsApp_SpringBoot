@@ -1,0 +1,60 @@
+server:
+  port: 9090
+
+
+spring:
+  application:
+    name: API-GATEWAY
+
+  main:
+    web-application-type: reactive
+
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+
+
+      routes:
+        - id: USERPROFILE-SERVICE
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/v1/**
+
+        - id: AUTHENTICATION-SERVICE
+          uri: http://localhost:8080
+          predicates:
+            - Path=/api/v2/**
+
+#         or we can use - Path=/**
+
+        - id: NEWS-SERVICE
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/v3/**
+
+        - id: WISHLIST-SERVICE
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/v4/**
+
+#  config:
+#    import: optional:configserver:http://localhost:8085
+
+eureka:
+  instances:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+
+
